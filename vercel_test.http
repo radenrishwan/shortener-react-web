@@ -1,0 +1,11 @@
+POST http://localhost:3000/api/url
+Content-Type: application/json
+
+{
+  "destination": "www.google.com",
+  "alias": "welp"
+}
+
+###
+
+GET http://localhost:3000/api/url?alias=welp
