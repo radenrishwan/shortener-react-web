@@ -30,18 +30,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response := urlService.FindByAlias(request)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(200)
 
-		_, err := fmt.Fprintf(w, string(helper.ToJSON(web.DefaultResponse[any]{
-			Code:    http.StatusOK,
-			Message: "OK",
-			Data:    response,
-		})))
-
-		if err != nil {
-			panic(err)
-		}
+		createSuccessResponse(w, r, response, http.StatusOK)
 	case "POST":
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -57,18 +47,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		response := urlService.Create(request)
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(200)
+		createSuccessResponse(w, r, response, http.StatusOK)
 
-		_, err = fmt.Fprintf(w, string(helper.ToJSON(web.DefaultResponse[any]{
-			Code:    http.StatusOK,
-			Message: "OK",
-			Data:    response,
-		})))
-
-		if err != nil {
-			panic(err)
-		}
+	default:
+		createFailedResponse(w, r, "Url path not found", nil, http.StatusBadGateway)
 	}
 }
 
@@ -76,6 +58,10 @@ func errorHandler(w http.ResponseWriter, r *http.Request) {
 	err := recover()
 
 	if err != nil {
+		if validationHandler(w, r, err) {
+			return
+		}
+
 		if notFoundHandler(w, r, err) {
 			return
 		}
@@ -83,25 +69,26 @@ func errorHandler(w http.ResponseWriter, r *http.Request) {
 		if isExistHandler(w, r, err) {
 			return
 		}
+
+		createFailedResponse(w, r, "Internal server error", nil, http.StatusInternalServerError)
 	}
+}
+
+func validationHandler(w http.ResponseWriter, r *http.Request, err any) bool {
+	exc, ok := err.(exception.ValidationException)
+
+	if ok {
+		createFailedResponse(w, r, exc.Message, nil, http.StatusBadRequest)
+	}
+
+	return ok
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request, err any) bool {
 	exc, ok := err.(exception.NotFoundException)
 
 	if ok {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(404)
-
-		_, err := fmt.Fprintf(w, string(helper.ToJSON(web.DefaultResponse[any]{
-			Code:    http.StatusNotFound,
-			Message: exc.Message,
-			Data:    nil,
-		})))
-
-		if err != nil {
-			panic(err)
-		}
+		createFailedResponse(w, r, exc.Message, nil, http.StatusNotFound)
 	}
 
 	return ok
@@ -110,19 +97,36 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request, err any) bool {
 func isExistHandler(w http.ResponseWriter, r *http.Request, err any) bool {
 	exc, ok := err.(exception.IsExistException)
 	if ok {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(400)
-
-		_, err := fmt.Fprintf(w, string(helper.ToJSON(web.DefaultResponse[any]{
-			Code:    http.StatusBadRequest,
-			Message: exc.Message,
-			Data:    nil,
-		})))
-
-		if err != nil {
-			panic(err)
-		}
+		createFailedResponse(w, r, exc.Message, nil, http.StatusBadRequest)
 	}
 
 	return ok
+}
+
+func createFailedResponse(w http.ResponseWriter, r *http.Request, message string, data any, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "https://shortener.mohamadrishwan.me")
+	w.WriteHeader(code)
+
+	_, err := fmt.Fprintf(w, string(helper.ToJSON(web.DefaultResponse[any]{
+		Code:    code,
+		Message: message,
+		Data:    data,
+	})))
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func createSuccessResponse(w http.ResponseWriter, r *http.Request, response any, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "https://shortener.mohamadrishwan.me")
+	w.WriteHeader(code)
+
+	_, err := fmt.Fprintf(w, string(helper.ToJSON(response)))
+
+	if err != nil {
+		panic(err)
+	}
 }
