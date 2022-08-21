@@ -1,8 +1,9 @@
-# Shortener URL API
-An api for Shortener URL
+# URL Shortener WEB
+Showcase project for [URL Shorter API](https://github.com/radenrishwan/shortener-url-api)
 
-## Showcase
-You can see the result of this API in the following [link](https://github.com/radenrishwan/shortener-web)
+## Demo
+you can access the website [here](https://shortener.mohamadrishwan.me)
 
 ## TODO
-- [x] Showcase Project
+- [ ] Add a feature to generate a random short URL
+- [ ] Responsive design
