@@ -1,11 +1,22 @@
-POST http://localhost:3000/api/url
+POST https://shortener-radenrishwan.vercel.app/api/url
 Content-Type: application/json
 
 {
   "destination": "www.google.com",
-  "alias": "welp"
+  "alias": "hello"
 }
 
 ###
 
 GET http://localhost:3000/api/url?alias=welp
+
+###
+POST https://shortener-radenrishwan.vercel.app/api/url
+Content-Type: application/json
+
+{
+  "destination": "www.google.com",
+  "alias": "hello"
+}
+
+###

@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    width: 100vw;
+    height: 100vh;
+    background-color: whitesmoke;
+    color: #1c1919;
+}
+
+.dark-mode {
+    background-color: #1c1919;
+    color: whitesmoke;
+}
+
+.navbar-dark-mode {
+    --tw-bg-opacity: 1;
+    background-color: rgba(0, 0, 0, 0.808);
+    border-bottom: 1px solid whitesmoke;
+}
+
+.bottom-nav-dark-mode {
+    --tw-bg-opacity: 1;
+    background-color: rgba(0, 0, 0, 0.808);
+    border-bottom: 1px solid whitesmoke;
+}
+
+.alert-dark-mode {
+    color: black;
+}
+
+.content-dark-mode {
+    color: #1c1919;
+}
+
+.moto-dark-mode {
+    color: white
+}
